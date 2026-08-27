@@ -1,0 +1,1 @@
+add notes describing which order to do the VAO / VBO / ShaderProgram / etc. stuff in
