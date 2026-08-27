@@ -1,0 +1,1 @@
+Is Claude Code allowed in this repo? Hell no! I have placed a lifelong ban on Claude Code. This repo is not for the LLM, its not for the AI companies, its not for Claude Code! 
