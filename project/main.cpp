@@ -5,6 +5,7 @@
 
 //include models
 #include "models/triangle.hpp"
+#include "models/rectangle.hpp"
 
 //include shaders
 const char* basicVertexShaderSource = 
@@ -119,6 +120,26 @@ int main(){
 
     
     ////////////////////////////
+    //EBO//////////////////////
+    unsigned int VAO2;
+    glGenVertexArrays(2, &VAO2);
+    glBindVertexArray(VAO2);
+
+    unsigned int VBO2;
+    glGenBuffers(2, &VBO2);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO2);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(rectangle::vertices), rectangle::vertices, GL_STATIC_DRAW);
+
+    unsigned int EBO;
+    glGenBuffers(2, &EBO);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(rectangle::indices), rectangle::indices, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0,3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+    /////////////////////////////
+
 
     while(!glfwWindowShouldClose(window)){
         //input first
@@ -131,6 +152,15 @@ int main(){
         glUseProgram(shaderProgram);
         glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLES, 0, 3);
+
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // wireframe mode
+
+        glBindVertexArray(VAO2);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+        glBindVertexArray(0);
+
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // wireframe mode off
 
         // events and buffers last
         glfwSwapBuffers(window);
