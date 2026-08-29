@@ -18,8 +18,9 @@ const char* basicVertexShaderSource =
 const char* basicFragmentShaderSource =
 "#version 330 core\n"
 "out vec4 FragColor;\n"
+"uniform vec4 ourColor;\n"
 "void main(){\n"
-"    FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+"    FragColor = ourColor;\n"
 "}\0";
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height){
@@ -139,7 +140,10 @@ int main(){
     glVertexAttribPointer(0,3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
     /////////////////////////////
-
+    //color
+    int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
+    glUniform4f(vertexColorLocation, 0.5f, 0.0f, 0.0f, 1.0f);
+    //
 
     while(!glfwWindowShouldClose(window)){
         //input first
@@ -150,10 +154,15 @@ int main(){
         glClear(GL_COLOR_BUFFER_BIT);
 
         glUseProgram(shaderProgram);
+
+        glUniform4f(vertexColorLocation, 0.5f, 0.0f, 0.0f, 1.0f);
+
         glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLES, 0, 3);
 
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // wireframe mode
+
+        glUniform4f(vertexColorLocation, 0.0f, 0.0f, 0.5f, 1.0f);
 
         glBindVertexArray(VAO2);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
