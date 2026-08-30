@@ -7,6 +7,9 @@
 #include "models/triangle.hpp"
 #include "models/rectangle.hpp"
 
+//include Classes
+#include "code/ShaderProgram.hpp"
+
 //include shaders
 const char* basicVertexShaderSource = 
 "#version 330 core\n"
@@ -71,79 +74,12 @@ int main(){
 
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
     /////////////////////////////
-    //temp shader stuff//////////
-    unsigned int vertexShader;
-    vertexShader = glCreateShader(GL_VERTEX_SHADER);
-
-    glShaderSource(vertexShader, 1, &basicVertexShaderSource, NULL);
-    glCompileShader(vertexShader);
-
-    int success;
-    char infoLog[512];
-    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-
-    if(!success){
-        glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-        std::cout << "Vertex shader compilation error:\n" << infoLog << std::endl;
-    }
-
-    unsigned int fragmentShader;
-    fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-
-    glShaderSource(fragmentShader, 1, &basicFragmentShaderSource, NULL);
-    glCompileShader(fragmentShader);
-
-    glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-
-    if(!success){
-        glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-        std::cout << "Fragment shader compilation error:\n" << infoLog << std::endl;
-    }
-
-    unsigned int shaderProgram;
-    shaderProgram = glCreateProgram();
-
-    glAttachShader(shaderProgram, vertexShader);
-    glAttachShader(shaderProgram, fragmentShader);
-    glLinkProgram(shaderProgram);
-
-    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-    if(!success){
-        glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-        std::cout << "Shader program linking error:\n" << infoLog << std::endl;
-    }
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
-
-    
-    ////////////////////////////
-    //EBO//////////////////////
-    unsigned int VAO2;
-    glGenVertexArrays(2, &VAO2);
-    glBindVertexArray(VAO2);
-
-    unsigned int VBO2;
-    glGenBuffers(2, &VBO2);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO2);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(rectangle::vertices), rectangle::vertices, GL_STATIC_DRAW);
-
-    unsigned int EBO;
-    glGenBuffers(2, &EBO);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(rectangle::indices), rectangle::indices, GL_STATIC_DRAW);
+    ShaderProgram firstShaderProgram("shaders/basic_vertex_shader.glsl", "shaders/basic_fragment_shader.glsl");
 
     glVertexAttribPointer(0,3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
-    /////////////////////////////
-    //color
-    int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
-    glUniform4f(vertexColorLocation, 0.5f, 0.0f, 0.0f, 1.0f);
-    //
+
+    int vertexColorLocation = glGetUniformLocation(firstShaderProgram.ID, "ourColor");
 
     while(!glfwWindowShouldClose(window)){
         //input first
@@ -153,23 +89,11 @@ int main(){
         glClearColor(0.1f, 0.5f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        glUseProgram(shaderProgram);
-
-        glUniform4f(vertexColorLocation, 0.5f, 0.0f, 0.0f, 1.0f);
-
+        firstShaderProgram.use();
         glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLES, 0, 3);
 
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // wireframe mode
-
-        glUniform4f(vertexColorLocation, 0.0f, 0.0f, 0.5f, 1.0f);
-
-        glBindVertexArray(VAO2);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
-        glBindVertexArray(0);
-
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // wireframe mode off
+        glUniform4f(vertexColorLocation, 0.5f, 0.0f, 0.0f,1.0f);
 
         // events and buffers last
         glfwSwapBuffers(window);
