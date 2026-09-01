@@ -20,15 +20,16 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "textures/stb_image.h"
 
-void framebuffer_size_callback(GLFWwindow* window, int width, int height){
-    glViewport(0,0,width,height);
-}
+void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+void processInput(GLFWwindow* window);
 
-void processInput(GLFWwindow* window){
-    if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS){
-        glfwSetWindowShouldClose(window, true);
-    }
-}
+glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
+glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+
+float deltaTime = 0.0f;
+float lastFrame = 0.0f;
+
 
 int main(){
     if(!glfwInit()){
@@ -109,20 +110,10 @@ int main(){
     // coordinate systems //
 
     // camera //
-    glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
 
-    glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
-    glm::vec3 cameraDirection = glm::normalize(cameraPos - cameraTarget);
-
-    glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
-    glm::vec3 cameraRight = glm::normalize(glm::cross(up, cameraDirection));
-
-    glm::vec3 cameraUp = glm::cross(cameraDirection, cameraRight);
 
     glm::mat4 view;
-    view = glm::lookAt(glm::vec3(0.0f, 0.0f, 3.0f),
-                        glm::vec3(0.0f, 0.0f, 0.0f),
-                        glm::vec3(0.0f, 1.0f, 0.0f));
+    view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
     // camera //
 
     glEnable(GL_DEPTH_TEST); // important for 3d and perspective stuff
@@ -130,6 +121,12 @@ int main(){
     while(!glfwWindowShouldClose(window)){
         //input first
         processInput(window);
+
+        view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+
+        float currentFrame = glfwGetTime();
+        deltaTime = currentFrame - lastFrame;
+        lastFrame = currentFrame;
 
         //rendering second
         glClearColor(0.1f, 0.5f, 0.1f, 1.0f);
@@ -163,4 +160,28 @@ int main(){
 
     glfwTerminate();
     return 0;
+}
+
+void framebuffer_size_callback(GLFWwindow* window, int width, int height){
+    glViewport(0,0,width,height);
+}
+
+void processInput(GLFWwindow* window){
+    if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS){
+        glfwSetWindowShouldClose(window, true);
+    }
+
+    float cameraSpeed = 1.0f * deltaTime;
+    if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS){
+        cameraPos += cameraSpeed * cameraFront;
+    }
+    if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS){
+        cameraPos -= cameraSpeed * cameraFront;
+    }
+    if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS){
+        cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+    }
+    if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS){
+        cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+    }
 }
