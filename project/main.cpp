@@ -1,5 +1,11 @@
-#include "../glad/include/glad/glad.h"
+// external libraries
+#include "../glad/include/glad/glad.h" // this must be before GLFW
 #include "../GLFW/glfw3.h"
+#include "../glm/glm.hpp"
+#include "../glm/gtc/matrix_transform.hpp"
+#include "../glm/gtc/type_ptr.hpp"
+
+// c++ extensions
 #include "stdlib.h"
 #include <iostream>
 
@@ -85,15 +91,47 @@ int main(){
     stbi_image_free(data);
     // textures //
 
+    // transform //
+    glm::mat4 trans = glm::mat4(1.0f);
+    trans = glm::rotate(trans, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));
+    trans = glm::scale(trans, glm::vec3(0.5, 0.5, 0.5));
+    // transform //
+
+    // coordinate systems //
+    glm::mat4 model = glm::mat4(1.0f);
+    model = glm::rotate(model, glm::radians(-0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+
+    glm::mat4 view = glm::mat4(1.0f);
+    view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+
+    glm::mat4 projection;
+    projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
+    // coordinate systems //
+
+    glEnable(GL_DEPTH_TEST); // important for 3d and perspective stuff
+
     while(!glfwWindowShouldClose(window)){
         //input first
         processInput(window);
 
         //rendering second
         glClearColor(0.1f, 0.5f, 0.1f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         firstShaderProgram.use();
+        //unsigned int transformLoc = glGetUniformLocation(firstShaderProgram.ID, "transform");
+        //glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
+        
+        model = glm::rotate(model, glm::radians(0.15f), glm::vec3(0.0f, 1.0f, 0.0f));
+
+        int modelLoc = glGetUniformLocation(firstShaderProgram.ID, "model");
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+
+        int viewLoc = glGetUniformLocation(firstShaderProgram.ID, "view");
+        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+
+        int projectionLoc = glGetUniformLocation(firstShaderProgram.ID, "projection");
+        glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
         glBindTexture(GL_TEXTURE_2D, texture);
         glBindVertexArray(VAO);
