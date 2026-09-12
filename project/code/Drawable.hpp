@@ -13,13 +13,18 @@
 
 class Drawable{
     public:
-    std::shared_ptr<Model> Model;
-    std::shared_ptr<ShaderProgram> ShaderProgram;
+    std::shared_ptr<Model> model;
+    std::shared_ptr<ShaderProgram> shaderProgram;
 
     void Render(){
         glm::mat4 model(1.0f);
 
-        this->ShaderProgram->Render();
+        // transformation procesing here (fuck composite)
+
+        this->shaderProgram->setUniform("model", model);
+
+        this->shaderProgram->Render();
+        this->model->Render();
 
         glUseProgram(0);
     }

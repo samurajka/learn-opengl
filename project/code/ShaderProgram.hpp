@@ -6,6 +6,7 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include "../../glm/glm/glm.hpp"
 
 class ShaderProgram{
     public:
@@ -98,9 +99,15 @@ class ShaderProgram{
         glUniform1f(glGetUniformLocation(ID, name.c_str()), value);
     }
 
+    void setUniform(std::string name, glm::mat4 &mat){
+        this->use();
+        glm::uint transformLoc = glGetUniformLocation(this->ID, name.c_str());
+        glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(mat));
+        this->unuse();
+    }
+
     void Render(){
         this->use();
-
     }
 };
 
