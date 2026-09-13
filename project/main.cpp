@@ -113,13 +113,9 @@ int main(){
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         glm::mat4 view = camera.GetViewMatrix();
-        //int viewLoc = glGetUniformLocation(firstShaderProgram.ID, "view");
-        //glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
         firstShaderProgram.setUniform("view", view);
 
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), 800.0f / 600.0f, 0.1f, 100.0f);
-        //int projectionLoc = glGetUniformLocation(firstShaderProgram.ID, "projection");
-        //glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
         firstShaderProgram.setUniform("projection", projection);
 
         drawableInstance.Render();
