@@ -11,6 +11,7 @@
 #include "Model.hpp"
 #include "ShaderProgram.hpp"
 #include "Transformation.hpp"
+#include "Texture.hpp"
 
 class Drawable{
     public:
@@ -18,6 +19,7 @@ class Drawable{
     std::shared_ptr<ShaderProgram> shaderProgram;
     std::optional<TransformationList> transformations = std::nullopt;
     std::optional<Transformation> singleTransformation = std::nullopt;
+    std::optional<Texture> texture = std::nullopt;
 
     void Render(){
         glm::mat4 model(1.0f);
@@ -29,6 +31,11 @@ class Drawable{
 
         if(this->transformations.has_value()){
             this->transformations->ApplyAllTransformations(model);
+        }
+
+        if(this->texture.has_value()){
+            this->texture->ApplyTexture(*this->shaderProgram);
+            this->texture->Bind();
         }
 
         this->shaderProgram->setUniform("model", model);

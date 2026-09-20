@@ -9,6 +9,7 @@
 enum ModelType{
     VERTICES,
     VERTICES_COLOR,
+    VERTICES_TEXTURE,
 };
 
 class Model{
@@ -52,6 +53,14 @@ class Model{
             
             glEnableVertexAttribArray(2);
             glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (GLvoid*)(3 * sizeof(float)));
+            break;
+
+        case VERTICES_TEXTURE:
+            glEnableVertexAttribArray(0);
+            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (GLvoid*)(0 * sizeof(float)));
+            
+            glEnableVertexAttribArray(1);
+            glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (GLvoid*)(3 * sizeof(float)));
             break;
         
         default:

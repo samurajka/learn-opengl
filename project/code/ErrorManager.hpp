@@ -9,7 +9,7 @@ namespace error{
 
     void PrintMessage(int messagePriority, std::string text){
         if (LOG_LEVEL >= messagePriority){
-            std::cout << "ERROR: " << text << std::endl;
+            std::cout << "ERROR MANAGER, priority "<< messagePriority << ", " << text << std::endl;
         }
     }
 };

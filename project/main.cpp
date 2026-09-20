@@ -96,22 +96,11 @@ int main(){
     rectangleTransforms.PushBackTransformation(Transformation(TRANSLATE, glm::vec3(1.0f, 0.5f, 0.3f)));
     rectangleTransforms.PushBackTransformation(Transformation(ROTATE, glm::vec3(0.0f, 1.0f, 0.0f), 45.0f));
     rectangleInstance.transformations = rectangleTransforms;
-
-    /* IMPORTANT THIS BLOCK IS COMMENTED AND NOT GOING TO BE USED BUT ITS HERE FOR FUTURE REFERENCE
-    // textures // 
-    int width, height, nrChannels;
-    unsigned char* data = stbi_load("textures/container.jpg", &width, &height, &nrChannels, 0);
-    unsigned int texture;
-    glGenTextures(1, &texture);
-
-    glBindTexture(GL_TEXTURE_2D, texture);
-
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-    glGenerateMipmap(GL_TEXTURE_2D);
-
-    stbi_image_free(data);
-    // textures //
-    */
+    
+    // texture class test
+    ShaderProgram texturedShader("shaders/basic_vertex_shader.glsl", "shaders/textured_fragment_shader.glsl");
+    std::shared_ptr<Model> texTriangleModel = std::make_shared<Model>(VERTICES_TEXTURE);
+    texTriangleModel->BindBuffer(triangle::verticesAndTex);
     
 
     glEnable(GL_DEPTH_TEST); // important for 3d and perspective stuff
