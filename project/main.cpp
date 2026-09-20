@@ -19,6 +19,7 @@
 #include "code/Camera.hpp"
 #include "code/Model.hpp"
 #include "code/Drawable.hpp"
+#include "code/Transformation.hpp"
 
 //include textures
 #define STB_IMAGE_IMPLEMENTATION
@@ -43,8 +44,8 @@ int main(){
         return -1;
     }
 
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
@@ -74,11 +75,27 @@ int main(){
 
     std::shared_ptr<Model> model = std::make_shared<Model>(VERTICES);
     model->BindBuffer(triangle::vertices);
+    //std::cout<< model->Type << std::endl;
 
     Drawable drawableInstance;
 
     drawableInstance.model = model;
     drawableInstance.shaderProgram = std::make_shared<ShaderProgram>(firstShaderProgram);
+    Transformation triangleTransformation = Transformation(SCALE, glm::vec3(4.0f, 2.0f, 2.0f));
+    drawableInstance.singleTransformation = triangleTransformation;
+
+
+    std::shared_ptr<Model> rectangleModel = std::make_shared<Model>(VERTICES_COLOR);
+    //std::cout << rectangleModel->Type << std::endl;
+    rectangleModel->BindBuffer(rectangle::vertices_color);
+
+    Drawable rectangleInstance;
+    rectangleInstance.model = rectangleModel;
+    rectangleInstance.shaderProgram = std::make_shared<ShaderProgram>(firstShaderProgram);
+    TransformationList rectangleTransforms;
+    rectangleTransforms.PushBackTransformation(Transformation(TRANSLATE, glm::vec3(1.0f, 0.5f, 0.3f)));
+    rectangleTransforms.PushBackTransformation(Transformation(ROTATE, glm::vec3(0.0f, 1.0f, 0.0f), 45.0f));
+    rectangleInstance.transformations = rectangleTransforms;
 
     /* IMPORTANT THIS BLOCK IS COMMENTED AND NOT GOING TO BE USED BUT ITS HERE FOR FUTURE REFERENCE
     // textures // 
@@ -119,6 +136,8 @@ int main(){
         firstShaderProgram.setUniform("projection", projection);
 
         drawableInstance.Render();
+
+        rectangleInstance.Render();
 
         // events and buffers last
         glfwSwapBuffers(window);
