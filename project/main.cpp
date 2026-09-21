@@ -20,6 +20,7 @@
 #include "code/Model.hpp"
 #include "code/Drawable.hpp"
 #include "code/Transformation.hpp"
+#include "code/Application.hpp"
 
 //include textures
 #define STB_IMAGE_IMPLEMENTATION
@@ -61,6 +62,10 @@ int main(){
         std::cout << "Failed to initialize GLAD" << std::endl;
         return -1;
     }
+
+    std::unique_ptr<Application> application = std::make_unique<Application>();
+    
+    application->PrintVersion();
 
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
