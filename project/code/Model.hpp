@@ -5,6 +5,7 @@
 #include <stdlib.h> // idk these libraries are fucked
 #include <memory>
 #include "../../glad/include/glad/glad.h"
+#include "ErrorManager.hpp"
 
 enum ModelType{
     VERTICES,
@@ -64,7 +65,7 @@ class Model{
             break;
         
         default:
-            // add error handling
+            error::PrintMessage(2, "Model type not found when binding buffer");
             break;
         }
     }

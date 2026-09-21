@@ -40,15 +40,21 @@ float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
 int main(){
+    std::unique_ptr<Application> application = std::make_unique<Application>();
+
     if(!glfwInit()){
         std::cout << "Failed to initialize GLFW" << std::endl;
         return -1;
     }
 
+    application->Init();
+
+    /*
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+    */
 
     GLFWwindow* window = glfwCreateWindow(800, 600, "LearnOpenGL", NULL, NULL);
     if(window == NULL){
@@ -63,7 +69,7 @@ int main(){
         return -1;
     }
 
-    std::unique_ptr<Application> application = std::make_unique<Application>();
+
     
     application->PrintVersion();
 
@@ -106,6 +112,11 @@ int main(){
     ShaderProgram texturedShader("shaders/basic_vertex_shader.glsl", "shaders/textured_fragment_shader.glsl");
     std::shared_ptr<Model> texTriangleModel = std::make_shared<Model>(VERTICES_TEXTURE);
     texTriangleModel->BindBuffer(triangle::verticesAndTex);
+    Drawable texturedTriangle;
+    texturedTriangle.model = texTriangleModel;
+    texturedTriangle.shaderProgram = std::make_shared<ShaderProgram>(texturedShader);
+    Texture containerTexture = Texture("textures/container.jpg");
+    texturedTriangle.texture = containerTexture;
     
 
     glEnable(GL_DEPTH_TEST); // important for 3d and perspective stuff
@@ -129,9 +140,11 @@ int main(){
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), 800.0f / 600.0f, 0.1f, 100.0f);
         firstShaderProgram.setUniform("projection", projection);
 
-        drawableInstance.Render();
+        //drawableInstance.Render();
 
         rectangleInstance.Render();
+
+        texturedTriangle.Render();
 
         // events and buffers last
         glfwSwapBuffers(window);

@@ -10,6 +10,13 @@ class Application{
     int windowHeight = 600;
     int windowWidth = 800;
 
+    void Init(){
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+    }
+
     void PrintVersion(){
         std::cout << "OpenGL Version: " << glGetString(GL_VERSION) << std::endl;
 	    std::cout << "Vendor " << glGetString(GL_VENDOR) << std::endl;

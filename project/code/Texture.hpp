@@ -20,7 +20,8 @@ class Texture{
         if(!data){
             error::PrintMessage(2, "Texture data didnt load");
         }
-        
+        glEnable(GL_TEXTURE_2D);
+        glActiveTexture(GL_TEXTURE0);
         glGenTextures(1, &texture);
         glBindTexture(GL_TEXTURE_2D, texture);
 
@@ -37,6 +38,7 @@ class Texture{
     }
 
     void Bind(){
+        glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, this->texture);
     }
 
