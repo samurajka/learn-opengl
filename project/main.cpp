@@ -108,7 +108,7 @@ int main(){
     rectangleInstance.transformations = rectangleTransforms;
     
     // texture class test
-    ShaderProgram texturedShader("shaders/basic_vertex_shader.glsl", "shaders/textured_fragment_shader.glsl");
+    ShaderProgram texturedShader("shaders/textured_vertex_shader.glsl", "shaders/textured_fragment_shader.glsl");
     std::shared_ptr<Model> texTriangleModel = std::make_shared<Model>(VERTICES_TEXTURE);
     texTriangleModel->BindBuffer(triangle::verticesAndTex);
     Drawable texturedTriangle;
@@ -138,6 +138,9 @@ int main(){
 
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), 800.0f / 600.0f, 0.1f, 100.0f);
         firstShaderProgram.setUniform("projection", projection);
+
+        texturedShader.setUniform("view", view);
+        texturedShader.setUniform("projection", projection);
 
         drawableInstance.Render();
 
