@@ -92,12 +92,11 @@ int main(){
 
     drawableInstance.model = model;
     drawableInstance.shaderProgram = std::make_shared<ShaderProgram>(firstShaderProgram);
-    Transformation triangleTransformation = Transformation(SCALE, glm::vec3(4.0f, 2.0f, 2.0f));
+    Transformation triangleTransformation = Transformation(SCALE, glm::vec3(0.5f, 0.8f, 0.5f));
     drawableInstance.singleTransformation = triangleTransformation;
 
 
     std::shared_ptr<Model> rectangleModel = std::make_shared<Model>(VERTICES_COLOR);
-    //std::cout << rectangleModel->Type << std::endl;
     rectangleModel->BindBuffer(rectangle::vertices_color);
 
     Drawable rectangleInstance;
@@ -140,7 +139,7 @@ int main(){
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), 800.0f / 600.0f, 0.1f, 100.0f);
         firstShaderProgram.setUniform("projection", projection);
 
-        //drawableInstance.Render();
+        drawableInstance.Render();
 
         rectangleInstance.Render();
 

@@ -1,13 +1,11 @@
 #version 330 core
+
+// basic shader to render models with optional color
+
 out vec4 FragColor;
 
-in vec2 TexCoord;
 in vec3 SomeColor;
-
-uniform vec4 ourColor;
-uniform sampler2D ourTexture;
 
 void main(){
     FragColor = vec4(SomeColor, 1.0);
-    //FragColor = texture(ourTexture, TexCoord) * vec4(SomeColor, 1.0);
 }
