@@ -49,13 +49,6 @@ int main(){
 
     application->Init();
 
-    /*
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-    */
-
     GLFWwindow* window = glfwCreateWindow(800, 600, "LearnOpenGL", NULL, NULL);
     if(window == NULL){
         std::cout << "Failed to create GLFW window" << std::endl;
@@ -86,7 +79,6 @@ int main(){
 
     std::shared_ptr<Model> model = std::make_shared<Model>(VERTICES);
     model->BindBuffer(triangle::vertices);
-    //std::cout<< model->Type << std::endl;
 
     Drawable drawableInstance;
 

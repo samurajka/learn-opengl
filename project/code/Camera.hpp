@@ -48,6 +48,10 @@ class Camera{
         return glm::lookAt(Position, Position + Front, Up);
     }
 
+    glm::mat4 GetProjectionMatrix(){
+        
+    }
+
     void ProcessKeyboard(Camera_Movement direction, float deltaTime){
         float velocity = MovementSpeed * deltaTime;
         if(direction == FORWARD){
