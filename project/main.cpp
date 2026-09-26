@@ -13,6 +13,7 @@
 //include models
 #include "models/triangle.hpp"
 #include "models/rectangle.hpp"
+#include "models/suzi_flat.h"
 
 //include Classes
 #include "code/ShaderProgram.hpp"
@@ -84,6 +85,7 @@ int main(){
 
     drawableInstance.model = model;
     drawableInstance.shaderProgram = std::make_shared<ShaderProgram>(firstShaderProgram);
+
     Transformation triangleTransformation = Transformation(SCALE, glm::vec3(0.5f, 0.8f, 0.5f));
     drawableInstance.singleTransformation = triangleTransformation;
 
@@ -108,7 +110,16 @@ int main(){
     texturedTriangle.shaderProgram = std::make_shared<ShaderProgram>(texturedShader);
     Texture containerTexture = Texture("textures/container.jpg");
     texturedTriangle.texture = containerTexture;
+
+    // monkey
+    std::shared_ptr<Model> monkeyModel = std::make_shared<Model>(VERTICES);
+    monkeyModel->BindBuffer(monkey::suziFlat);
     
+    Drawable monkeyDrawable;
+    monkeyDrawable.model = monkeyModel;
+    monkeyDrawable.shaderProgram = std::make_shared<ShaderProgram>(firstShaderProgram);
+
+
 
     glEnable(GL_DEPTH_TEST); // important for 3d and perspective stuff
 
@@ -139,6 +150,8 @@ int main(){
         rectangleInstance.Render();
 
         texturedTriangle.Render();
+
+        monkeyDrawable.Render();
 
         // events and buffers last
         glfwSwapBuffers(window);
