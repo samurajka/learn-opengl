@@ -27,6 +27,14 @@ class Model{
         this->Type = type;
     }
 
+    Model(ModelType type, const std::initializer_list<float> &vertices){
+        glGenVertexArrays(1, &this->VAO);
+        glGenBuffers(1, &this->VBO);
+        this->Type = type;
+
+        BindBuffer(vertices);
+    }
+
     ~Model(){
         glDeleteBuffers(1, &this->VBO);
         glDeleteVertexArrays(1, &this->VAO);

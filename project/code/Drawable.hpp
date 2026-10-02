@@ -21,6 +21,13 @@ class Drawable{
     std::optional<Transformation> singleTransformation = std::nullopt;
     std::optional<Texture> texture = std::nullopt;
 
+    Drawable(){};
+
+    Drawable(std::shared_ptr<ShaderProgram> shaderProgram, std::shared_ptr<Model> model){
+        this->shaderProgram = shaderProgram;
+        this->model = model;
+    }
+
     void Render(){
         glm::mat4 model(1.0f);
 
