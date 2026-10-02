@@ -1,3 +1,10 @@
+/**
+ * Autorka: Klára Tischlingerová, TIS0028
+ * S pomocí: Astra3, Dr00g, HYZ0013 a dalších
+ * 
+ * those who dream of Heaven never last very long
+ */
+
 // external libraries
 #include "../glad/include/glad/glad.h" // this must be before GLFW
 #include "../glfw/include/GLFW/glfw3.h"
