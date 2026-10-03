@@ -19,7 +19,7 @@ const float SPEED = 2.0f;
 const float SENSITIVITY = 0.1f;
 const float ZOOM = 45.0f;
 
-class Camera : Subject<Camera>{
+class Camera : public Subject<Camera>{
     public:
 
     glm::vec3 Position;

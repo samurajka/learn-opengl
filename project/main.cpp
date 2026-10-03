@@ -29,6 +29,7 @@
 #include "code/Drawable.hpp"
 #include "code/Transformation.hpp"
 #include "code/Application.hpp"
+#include "code/Scenes.hpp"
 
 //include textures
 #define STB_IMAGE_IMPLEMENTATION

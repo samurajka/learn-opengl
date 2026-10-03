@@ -3,9 +3,11 @@
 #include <algorithm>
 #include "../models/triangle.hpp"
 
+// IMPORTANT this requires camera
 class Scene{
     public:
     std::vector<std::shared_ptr<Drawable>> drawables;
+    std::shared_ptr<Camera> camera;
 
     void AddDrawable(std::shared_ptr<Drawable> drawable){
         drawables.push_back(drawable);
@@ -38,19 +40,26 @@ class SceneManager{
 // PREMADE SCENES:
 
 namespace TestScenes{
-    // shaders
-    std::shared_ptr<ShaderProgram> basicShader = std::make_shared<ShaderProgram>("../shaders/basic_vertex_shader.glsl", "../shaders/basic_fragment_shader.glsl");
-
-    // models
-    std::shared_ptr<Model> triangleModel = std::make_shared<Model>(VERTICES, triangle::vertices);
-
-    // drawables
-    std::shared_ptr<Drawable> basicTriangle = std::make_shared<Drawable>(basicShader, triangleModel);
+    
 
     // scenes
-    Scene* TriangleScene(){
-        Scene* triangleScene;
+    std::shared_ptr<Scene> TriangleScene(std::shared_ptr<Camera> camera){
+        // shaders
+        std::shared_ptr<ShaderProgram> basicShader = std::make_shared<ShaderProgram>("../shaders/basic_vertex_shader.glsl", "../shaders/basic_fragment_shader.glsl");
+
+        // models
+        std::shared_ptr<Model> triangleModel = std::make_shared<Model>(VERTICES, triangle::vertices);
+
+        // drawables
+        std::shared_ptr<Drawable> basicTriangle = std::make_shared<Drawable>(basicShader, triangleModel);
+
+        // scene
+        std::shared_ptr<Scene> triangleScene;
+
+        camera->AddObserver(basicShader);
 
         triangleScene->AddDrawable(basicTriangle);
+
+        return triangleScene;
     }
 }
