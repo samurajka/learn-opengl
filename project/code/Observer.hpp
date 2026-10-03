@@ -3,10 +3,10 @@
 
 // ~~~IMPORTANT this is a very naive observer implementation and should be improved in the future~~~
 // Slightly better observer implementation I stole from HYZ0013. I still have doubts if this is the best implementation.
+// TODO: change the classes so they can also be used using the composition pattern. Use smart pointers
 
 #include <vector>
 #include <memory>
-#include "Camera.hpp"
 
 template<class T>
 class Subject{

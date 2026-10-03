@@ -7,8 +7,10 @@
 #include <sstream>
 #include <iostream>
 #include "../../glm/glm/glm.hpp"
+#include "Observer.hpp"
+#include "Camera.hpp"
 
-class ShaderProgram{
+class ShaderProgram : Observer<Camera>{
     public:
     unsigned int ID;
 
@@ -99,7 +101,7 @@ class ShaderProgram{
         glUniform1f(glGetUniformLocation(ID, name.c_str()), value);
     }
 
-    void setUniform(std::string name, glm::mat4 &mat){
+    void setUniform(std::string name, const glm::mat4 &mat){
         this->use();
         glm::uint transformLoc = glGetUniformLocation(this->ID, name.c_str());
         glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(mat));
@@ -108,6 +110,13 @@ class ShaderProgram{
 
     void Render(){
         this->use();
+    }
+
+    void update(Camera* camera){
+        this->use();
+        this->setUniform("view", camera->GetViewMatrix());
+        this->setUniform("projection", camera->GetProjectionMatrix());
+        this->unuse();
     }
 };
 

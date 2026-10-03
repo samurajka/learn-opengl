@@ -4,6 +4,7 @@
 #include "../../glad/include/glad/glad.h"
 #include "../../glm/glm/glm.hpp"
 #include "../../glm/glm/gtc/matrix_transform.hpp"
+#include "Observer.hpp"
 
 enum Camera_Movement{
     FORWARD,
@@ -18,7 +19,7 @@ const float SPEED = 2.0f;
 const float SENSITIVITY = 0.1f;
 const float ZOOM = 45.0f;
 
-class Camera{
+class Camera : Subject<Camera>{
     public:
 
     glm::vec3 Position;
@@ -49,7 +50,7 @@ class Camera{
     }
 
     glm::mat4 GetProjectionMatrix(){
-        
+        return glm::perspective(glm::radians(this->Zoom), 800.0f / 600.0f, 0.1f, 100.0f); // TODO: DEFINE SCREEN SIZE!!!
     }
 
     void ProcessKeyboard(Camera_Movement direction, float deltaTime){
