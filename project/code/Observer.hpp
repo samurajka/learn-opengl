@@ -9,6 +9,12 @@
 #include <memory>
 
 template<class T>
+class Observer{
+    public:
+    virtual void update(T& subject) = 0;
+};
+
+template<class T>
 class Subject{
     public:
     std::vector<std::shared_ptr<Observer<T>>> observers;
@@ -23,15 +29,11 @@ class Subject{
 
     void notifyObservers(){
         for (auto observer : this->observers){
-            observer->update((std::shared_ptr<T>)this)
+            observer->update(static_cast<T&>(*this));
         }
     }
 };
 
-template<class T>
-class Observer{
-    public:
-    virtual void update(std::shared_ptr<T> subject) = 0;
-};
+
 
 #endif

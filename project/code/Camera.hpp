@@ -67,6 +67,7 @@ class Camera : public Subject<Camera>{
         if(direction == RIGHT){
             Position += Right * velocity;
         }
+        notifyObservers();
     }
 
     void ProccessMouseMovement(float xoffset, float yoffset, GLboolean constraintPitch = true){
@@ -86,6 +87,7 @@ class Camera : public Subject<Camera>{
         }
 
         updateCameraVectors();
+        notifyObservers();
     }
 
     void ProccessMouseScroll(float yoffset){
@@ -96,6 +98,7 @@ class Camera : public Subject<Camera>{
         if(Zoom > 45.0f){
             Zoom = 45.0f;
         }
+        notifyObservers();
     }
 
 private:

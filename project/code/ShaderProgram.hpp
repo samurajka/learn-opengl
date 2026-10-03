@@ -10,7 +10,7 @@
 #include "Observer.hpp"
 #include "Camera.hpp"
 
-class ShaderProgram : Observer<Camera>{
+class ShaderProgram : public Observer<Camera>{
     public:
     unsigned int ID;
 
@@ -112,10 +112,10 @@ class ShaderProgram : Observer<Camera>{
         this->use();
     }
 
-    void update(Camera* camera){
+    void update(Camera& camera){
         this->use();
-        this->setUniform("view", camera->GetViewMatrix());
-        this->setUniform("projection", camera->GetProjectionMatrix());
+        this->setUniform("view", camera.GetViewMatrix());
+        this->setUniform("projection", camera.GetProjectionMatrix());
         this->unuse();
     }
 };
