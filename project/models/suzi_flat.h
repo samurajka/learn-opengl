@@ -1,3 +1,6 @@
+#ifndef SUZI_FLAT_H
+#define SUZI_FLAT_H
+
 #include <initializer_list>
 namespace monkey{
 std::initializer_list<float> suziFlat = {
@@ -2907,3 +2910,5 @@ std::initializer_list<float> suziFlat = {
 -0.773438f , -0.140625f , -0.125000f , -0.007891f , -0.915403f , -0.402462f ,
 };
 }
+
+#endif

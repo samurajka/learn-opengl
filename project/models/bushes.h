@@ -1,18 +1,9 @@
-/**
- * @file bushes.h
- *
- * @brief Bushes model
- *
- * @details  Command for rendering
- *           glDrawArrays(GL_TRIANGLES, 0, 8730);
- *
- * @author Martin Nemec
- *
- * @year 2023
- **/
+#ifndef BUSHES_H
+#define BUSHES_H
 
-
-const float bushes[] = {
+#include <initializer_list>
+namespace forest{
+std::initializer_list<float> bushes = {
    -0.010f , -0.001f , 0.010f , -0.760f , 0.489f , 0.429f ,
    0.016f , 0.036f , 0.020f , -0.705f , 0.615f , -0.353f ,
    0.016f , 0.036f , 0.017f , -0.785f , 0.533f , 0.316f ,
@@ -9048,4 +9039,6 @@ const float bushes[] = {
    -0.002f , 0.101f , -0.009f , 0.159f , 0.070f , 0.985f ,
    -0.001f , 0.152f , -0.014f , 0.287f , 0.115f , 0.951f ,
    -0.005f , 0.101f , -0.008f , 0.417f , 0.045f , 0.908f
+   };
 };
+#endif

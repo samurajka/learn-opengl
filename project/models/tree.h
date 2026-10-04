@@ -1,18 +1,10 @@
-/**
- * @file tree.h
- *
- * @brief Tree model
- *
- * @details  Command for rendering
- *           glDrawArrays(GL_TRIANGLES, 0, 92814);
- *
- * @author Martin Nemec
- *
- * @year 2023
- **/
+#ifndef TREE_H
+#define TREE_H
 
+#include <initializer_list>
 
-const float tree[] = {
+namespace forest{
+std::initializer_list<float> tree = {
    0.247f , 0.000f , -0.000f , 0.410f , 0.556f , -0.723f ,
    0.158f , 0.000f , -0.039f , 0.264f , -0.117f , -0.957f ,
    0.159f , 0.013f , -0.040f , 0.392f , 0.027f , -0.919f ,
@@ -92828,3 +92820,5 @@ const float tree[] = {
    0.823f , 2.029f , 0.293f , 0.243f , 0.933f , 0.265f ,
    0.927f , 2.015f , 0.210f , 0.303f , 0.949f , 0.086f ,
 };
+}
+#endif

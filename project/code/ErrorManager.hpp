@@ -5,7 +5,7 @@
 #include <iostream>
 
 namespace error{
-    int LOG_LEVEL = 3;
+    int LOG_LEVEL = 5;
     /*
         1 = application breaking error
         2 = object breaking error

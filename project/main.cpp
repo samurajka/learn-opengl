@@ -16,6 +16,8 @@
 #include "stdlib.h"
 #include <iostream>
 #include <memory>
+#include <cstdlib>
+#include <ctime>
 
 //include models
 #include "models/triangle.hpp"
@@ -53,6 +55,8 @@ int main(){
     // fuck raw pointers
     std::unique_ptr<Application> application = std::make_unique<Application>(); 
 
+    srand(time(0));
+
     if(!glfwInit()){
         std::cout << "Failed to initialize GLFW" << std::endl;
         return -1;
@@ -86,12 +90,27 @@ int main(){
 
     // stuff
     auto firstScene = TestScenes::TriangleScene(camera);
+    auto loginScene = TestScenes::LoginScene(camera);
+    auto monkeyScene = TestScenes::MonkeyScene(camera);
+    auto forestScene = TestScenes::ForestScene(camera);
+
+    auto sceneManager = std::make_shared<SceneManager>();
+
+    sceneManager->AddScene(firstScene);
+    sceneManager->AddScene(loginScene);
+    sceneManager->AddScene(monkeyScene);
+    sceneManager->AddScene(forestScene);
+
+    sceneManager->ActiveSceneUp();
+    sceneManager->ActiveSceneUp();
+    sceneManager->ActiveSceneUp();
 
     glEnable(GL_DEPTH_TEST); // important for 3d and perspective stuff
 
     while(!glfwWindowShouldClose(window)){
         //input first
         processInput(window);
+        sceneManager->ProcessInput(window);
 
         // delta time calculation
         float currentFrame = static_cast<float>(glfwGetTime());
@@ -102,7 +121,7 @@ int main(){
         glClearColor(0.1f, 0.5f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        firstScene->Render();
+        sceneManager->Render();
 
         // events and buffers last
         glfwSwapBuffers(window);
