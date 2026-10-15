@@ -2,7 +2,7 @@
 #define MODEL_HPP
 
 #include <cstdlib>
-#include <stdlib.h> // idk these libraries are fucked
+#include <stdlib.h>
 #include <memory>
 #include "../../glad/include/glad/glad.h"
 #include "ErrorManager.hpp"

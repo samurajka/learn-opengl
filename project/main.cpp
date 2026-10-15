@@ -1,8 +1,6 @@
 /**
  * Autorka: Claire Tischlingerová, TIS0028
  * S pomocí: Astra3, Dr00g, HYZ0013 a dalších
- * 
- * those who dream of Heaven never last very long
  */
 
 // external libraries
@@ -39,6 +37,12 @@
 #include "textures/stb_image.h"
 
 
+int viewportX = 0;
+int viewportY = 0;
+int GviewportWidth = 800;
+int GviewportHeight = 600;
+
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
@@ -52,7 +56,6 @@ float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
 int main(){
-    // fuck raw pointers
     std::unique_ptr<Application> application = std::make_unique<Application>(); 
 
     srand(time(0));
@@ -118,8 +121,14 @@ int main(){
         lastFrame = currentFrame;
 
         //rendering second
-        glClearColor(0.1f, 0.5f, 0.1f, 1.0f);
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        glEnable(GL_SCISSOR_TEST);
+        glScissor(viewportX, viewportY, GviewportWidth, GviewportHeight);
+        glClearColor(0.1f, 0.5f, 0.1f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+        glDisable(GL_SCISSOR_TEST);
 
         sceneManager->Render();
 
@@ -132,8 +141,28 @@ int main(){
     return 0;
 }
 
-void framebuffer_size_callback(GLFWwindow* window, int width, int height){
-    glViewport(0,0,width,height);
+void framebuffer_size_callback(GLFWwindow* window, int width, int height){ // define AR later
+    if (width == 0 || height == 0) return;
+
+    constexpr float targetAspect = 4.0f / 3.0f;
+    int viewportWidth = width;
+    int viewportHeight = height;
+    int x = 0;
+    int y = 0;
+
+    if (width / static_cast<float>(height) > targetAspect) {
+        viewportWidth = static_cast<int>(height * targetAspect);
+        x = (width - viewportWidth) / 2;
+    } else {
+        viewportHeight = static_cast<int>(width / targetAspect);
+        y = (height - viewportHeight) / 2;
+    }
+
+    viewportX = x;
+    viewportY = y;
+    GviewportWidth = viewportWidth;
+    GviewportHeight = viewportHeight;
+    glViewport(viewportX, viewportY, viewportWidth, viewportHeight);
 }
 
 void processInput(GLFWwindow* window){

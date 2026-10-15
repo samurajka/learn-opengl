@@ -13,16 +13,22 @@
 #include "ErrorManager.hpp"
 #include <cstdlib>
 #include "../../glad/include/glad/glad.h"
+#include "Light.hpp"
 
 // IMPORTANT this requires camera
 class Scene{
     public:
     std::vector<std::shared_ptr<Drawable>> drawables;
     std::shared_ptr<Camera> camera;
+    std::vector<std::shared_ptr<lights::PointLight>> pLights;
     
 
     void AddDrawable(std::shared_ptr<Drawable> drawable){
         drawables.push_back(drawable);
+    }
+
+    void AddPLight(std::shared_ptr<lights::PointLight> pLight){
+        pLights.push_back(pLight);
     }
 
     void UpdateViewAndProjection(){
@@ -161,6 +167,10 @@ namespace TestScenes{
         basicShader->update(*camera);
 
         monkeyScene->AddDrawable(monkeyDrawable);
+
+        std::shared_ptr<lights::PointLight> light = std::make_shared<lights::PointLight>();
+        light->SetPosition(glm::vec3(0.5f, 0.0f, 0.5f));
+        monkeyScene->AddPLight(light);
 
         return monkeyScene;
     }
