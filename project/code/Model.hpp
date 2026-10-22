@@ -13,6 +13,7 @@ enum ModelType{
     VERTICES_COLOR,
     VERTICES_TEXTURE,
     VERTICES_NORMAL,
+    VERTICES_TEXTURE_NORMAL,
 };
 
 class Model{
@@ -92,6 +93,16 @@ class Model{
             glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (GLvoid*)0);
             glEnableVertexAttribArray(1);
             glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (GLvoid*)(3 * sizeof(float)));
+            break;
+
+        case VERTICES_TEXTURE_NORMAL:
+            this->vertexCount = static_cast<int>(vertices.size() / 8);
+            glEnableVertexAttribArray(0);
+            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (GLvoid*)0);
+            glEnableVertexAttribArray(1);
+            glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (GLvoid*)(3 * sizeof(float)));
+            glEnableVertexAttribArray(2);
+            glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (GLvoid*)(6 * sizeof(float)));
             break;
         
         default:

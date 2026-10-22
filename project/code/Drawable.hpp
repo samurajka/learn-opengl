@@ -12,6 +12,7 @@
 #include "ShaderProgram.hpp"
 #include "Transformation.hpp"
 #include "Texture.hpp"
+#include "Material.hpp"
 
 class Drawable{
     public:
@@ -20,6 +21,7 @@ class Drawable{
     std::optional<TransformationList> transformations = std::nullopt;
     std::optional<Transformation> singleTransformation = std::nullopt;
     std::shared_ptr<Texture> texture;
+    std::shared_ptr<Material> material;
 
     Drawable(){};
 
@@ -40,15 +42,18 @@ class Drawable{
             this->transformations->ApplyAllTransformations(model);
         }
 
-        this->shaderProgram->setBool("hasTexture", this->texture != nullptr);
-        if(this->texture){
-            this->texture->ApplyTexture(*this->shaderProgram);
-            this->texture->Bind();
-        }
-
         this->shaderProgram->setUniform("model", model);
 
         this->shaderProgram->Render();
+        if(this->material){
+            this->material->Apply(*this->shaderProgram);
+        }else{
+            this->shaderProgram->setBool("hasTexture", this->texture != nullptr);
+            if(this->texture){
+                this->texture->ApplyTexture(*this->shaderProgram);
+                this->texture->Bind();
+            }
+        }
         this->model->Render();
 
         glUseProgram(0);

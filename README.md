@@ -28,19 +28,22 @@ The Assimp include path is important: it ensures Assimp's own nested headers
 come from the same vendored version as `Importer.hpp`. Loading failures throw
 `std::runtime_error` with the file path and Assimp's diagnostic message.
 
-To load an OBJ together with its MTL diffuse textures, use the textured shader
-and add every returned drawable to the scene:
+To load an OBJ with its MTL material textures and lighting, use the house
+shaders and add every returned drawable to the scene:
 
 ```cpp
-auto texturedShader = std::make_shared<ShaderProgram>(
-    "shaders/textured_vertex_shader.glsl",
-    "shaders/textured_fragment_shader.glsl"
+auto materialShader = std::make_shared<ShaderProgram>(
+    "shaders/house_vertex_shader.glsl",
+    "shaders/house_fragment_shader.glsl"
 );
-for (const auto &drawable : ModelLoader::LoadObjDrawables("models/model.obj", texturedShader)) {
+materialShader->setVec3("lightPos", glm::vec3(2.0f, 3.0f, 3.0f));
+materialShader->setVec3("lightColor", glm::vec3(1.0f));
+for (const auto &drawable : ModelLoader::LoadObjDrawables("models/model.obj", materialShader)) {
     scene->AddDrawable(drawable);
 }
 ```
 
 Keep the OBJ, MTL, and image files together in their referenced relative paths.
-The textured loader creates one drawable per OBJ mesh/material and loads its
-diffuse map; meshes without a diffuse map render white.
+The loader creates one drawable per OBJ mesh/material and loads diffuse,
+normal, and shininess/roughness maps into a `Material`. `Material::Apply`
+binds those maps and material values for the lighting shader.

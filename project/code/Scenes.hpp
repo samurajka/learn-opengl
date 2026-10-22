@@ -220,9 +220,10 @@ namespace TestScenes{
     }
 
     std::shared_ptr<Scene> HouseScene(std::shared_ptr<Camera> camera){
-        auto phongShader = std::make_shared<ShaderProgram>("shaders/phong_vertex_shader.glsl", "shaders/phong_fragment.glsl");
-        auto houseModel = ModelLoader::LoadObj("models/old_house.obj");
-        auto houseDrawable = std::make_shared<Drawable>(phongShader, houseModel);
+        auto texturedShader = std::make_shared<ShaderProgram>(
+            "shaders/house_vertex_shader.glsl",
+            "shaders/house_fragment_shader.glsl"
+        );
         auto houseScene = std::make_shared<Scene>();
 
         TransformationList houseTransformations;
@@ -232,20 +233,17 @@ namespace TestScenes{
             Transformation(SCALE, {0.15f, 0.15f, 0.15f}));
         houseTransformations.PushBackTransformation(
             Transformation(ROTATE, {1.0f, 0.0f, 0.0f}, glm::radians(-90.0f)));
-        houseDrawable->transformations = houseTransformations;
 
-        camera->AddObserver(phongShader);
-        phongShader->update(*camera);
-        phongShader->setVec3("lightPos", glm::vec3(2.0f, 3.0f, 3.0f));
-        phongShader->setVec3("lightColor", glm::vec3(1.0f));
-        phongShader->setVec3("objectColor", glm::vec3(0.75f, 0.55f, 0.35f));
-        phongShader->setFloat("ambientStrength", 0.3f);
-        phongShader->setFloat("diffuseStrength", 0.8f);
-        phongShader->setFloat("specularStrength", 0.2f);
-        phongShader->setFloat("shininess", 16.0f);
-        phongShader->setBool("useBlinnPhong", true);
+        camera->AddObserver(texturedShader);
+        texturedShader->update(*camera);
+        texturedShader->setVec3("lightPos", glm::vec3(2.0f, 3.0f, 3.0f));
+        texturedShader->setVec3("lightColor", glm::vec3(1.0f));
+        for (const auto &drawable : ModelLoader::LoadObjDrawables(
+                 "models/old_house.obj", texturedShader)) {
+            drawable->transformations = houseTransformations;
+            houseScene->AddDrawable(drawable);
+        }
 
-        houseScene->AddDrawable(houseDrawable);
         return houseScene;
     }
 }

@@ -6,6 +6,7 @@
 #include <assimp/scene.h>
 
 #include "Drawable.hpp"
+#include "Material.hpp"
 #include "Model.hpp"
 
 #include <memory>
@@ -77,6 +78,7 @@ public:
             path,
             aiProcess_Triangulate |
             aiProcess_FlipUVs |
+            aiProcess_GenSmoothNormals |
             aiProcess_PreTransformVertices
         );
 
@@ -95,7 +97,7 @@ public:
 
         for (unsigned int meshIndex = 0; meshIndex < scene->mNumMeshes; ++meshIndex) {
             const aiMesh *mesh = scene->mMeshes[meshIndex];
-            if (mesh == nullptr || !mesh->HasPositions()) {
+            if (mesh == nullptr || !mesh->HasPositions() || !mesh->HasNormals()) {
                 continue;
             }
 
@@ -109,6 +111,7 @@ public:
                 for (unsigned int index = 0; index < face.mNumIndices; ++index) {
                     const unsigned int vertexIndex = face.mIndices[index];
                     const aiVector3D &position = mesh->mVertices[vertexIndex];
+                    const aiVector3D &normal = mesh->mNormals[vertexIndex];
                     const aiVector3D texCoord = mesh->HasTextureCoords(0)
                         ? mesh->mTextureCoords[0][vertexIndex]
                         : aiVector3D(0.0f, 0.0f, 0.0f);
@@ -117,6 +120,9 @@ public:
                         static_cast<float>(position.x),
                         static_cast<float>(position.y),
                         static_cast<float>(position.z),
+                        static_cast<float>(normal.x),
+                        static_cast<float>(normal.y),
+                        static_cast<float>(normal.z),
                         static_cast<float>(texCoord.x),
                         static_cast<float>(texCoord.y)
                     });
@@ -127,43 +133,73 @@ public:
                 continue;
             }
 
-            auto model = std::make_shared<Model>(VERTICES_TEXTURE, vertices);
+            auto model = std::make_shared<Model>(VERTICES_TEXTURE_NORMAL, vertices);
             auto drawable = std::make_shared<Drawable>(shaderProgram, model);
-            if (mesh->HasTextureCoords(0) && mesh->mMaterialIndex < scene->mNumMaterials) {
-                aiString textureName;
+            auto drawableMaterial = std::make_shared<Material>();
+            if (mesh->mMaterialIndex < scene->mNumMaterials) {
                 const aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
-                if (material != nullptr &&
-                    material->GetTexture(aiTextureType_DIFFUSE, 0, &textureName) == AI_SUCCESS) {
-                    std::string texturePath = textureName.C_Str();
-                    for (char &character : texturePath) {
-                        if (character == '\\') {
-                            character = '/';
-                        }
-                    }
-                    if (!texturePath.empty() && texturePath[0] == '*') {
-                        throw std::runtime_error(
-                            "Embedded OBJ textures are not supported: " + texturePath
-                        );
-                    }
-                    const bool hasDrivePrefix =
-                        texturePath.size() > 1 && texturePath[1] == ':';
-                    const bool isAbsolutePath =
-                        !texturePath.empty() &&
-                        (texturePath[0] == '/' || texturePath[0] == '\\' || hasDrivePrefix);
-                    if (!isAbsolutePath) {
-                        texturePath = directory + texturePath;
+                if (material != nullptr) {
+                    aiColor4D color;
+                    if (aiGetMaterialColor(material, AI_MATKEY_COLOR_DIFFUSE, &color) == AI_SUCCESS) {
+                        drawableMaterial->diffuseColor = glm::vec3(color.r, color.g, color.b);
                     }
 
-                    auto texture = textures.find(texturePath);
-                    if (texture == textures.end()) {
-                        texture = textures.emplace(
-                            texturePath,
-                            std::make_shared<Texture>(texturePath)
-                        ).first;
+                    if (aiGetMaterialColor(material, AI_MATKEY_COLOR_SPECULAR, &color) == AI_SUCCESS) {
+                        drawableMaterial->specularColor = glm::vec3(color.r, color.g, color.b);
                     }
-                    drawable->texture = texture->second;
+
+                    float shininess = drawableMaterial->shininess;
+                    if (aiGetMaterialFloat(material, AI_MATKEY_SHININESS, &shininess) == AI_SUCCESS &&
+                        shininess > 0.0f) {
+                        drawableMaterial->shininess = shininess;
+                    }
+
+                    auto loadTexture = [&](aiTextureType textureType) -> std::shared_ptr<Texture> {
+                        aiString textureName;
+                        if (material->GetTexture(textureType, 0, &textureName) != AI_SUCCESS) {
+                            return nullptr;
+                        }
+
+                        std::string texturePath = textureName.C_Str();
+                        for (char &character : texturePath) {
+                            if (character == '\\') {
+                                character = '/';
+                            }
+                        }
+                        if (!texturePath.empty() && texturePath[0] == '*') {
+                            throw std::runtime_error(
+                                "Embedded OBJ textures are not supported: " + texturePath
+                            );
+                        }
+
+                        const bool hasDrivePrefix =
+                            texturePath.size() > 1 && texturePath[1] == ':';
+                        const bool isAbsolutePath =
+                            !texturePath.empty() &&
+                            (texturePath[0] == '/' || texturePath[0] == '\\' || hasDrivePrefix);
+                        if (!isAbsolutePath) {
+                            texturePath = directory + texturePath;
+                        }
+
+                        auto texture = textures.find(texturePath);
+                        if (texture == textures.end()) {
+                            texture = textures.emplace(
+                                texturePath,
+                                std::make_shared<Texture>(texturePath)
+                            ).first;
+                        }
+                        return texture->second;
+                    };
+
+                    drawableMaterial->diffuseTexture = loadTexture(aiTextureType_DIFFUSE);
+                    drawableMaterial->normalTexture = loadTexture(aiTextureType_NORMALS);
+                    if (!drawableMaterial->normalTexture) {
+                        drawableMaterial->normalTexture = loadTexture(aiTextureType_HEIGHT);
+                    }
+                    drawableMaterial->roughnessTexture = loadTexture(aiTextureType_SHININESS);
                 }
             }
+            drawable->material = drawableMaterial;
             drawables.push_back(drawable);
         }
 

@@ -1,7 +1,7 @@
 # 3ds Max Wavefront OBJ Exporter v0.99 - (c)2007 guruware
 # File Created: 19.10.2025 08:21:42
 
-mtllib old_house.mtl
+mtllib ../textures/old_house/old_house.mtl
 
 #
 # object Old_House
@@ -222565,4 +222565,3 @@ f 46676/50297/32425 46675/50296/32424 46691/50312/32440
 f 46692/50313/32441 46691/50312/32440 46675/50296/32424 
 f 46675/50296/32424 46674/50295/32423 46692/50313/32441 
 # 89816 faces
-
