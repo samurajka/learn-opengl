@@ -12,13 +12,15 @@ uniform sampler2D roughnessMap;
 uniform bool hasDiffuseMap;
 uniform bool hasNormalMap;
 uniform bool hasRoughnessMap;
-uniform vec3 materialDiffuseColor;
-uniform vec3 materialSpecularColor;
 uniform vec3 lightPos;
 uniform vec3 lightColor;
 uniform vec3 viewPos;
-uniform float ambientStrength;
-uniform float materialShininess;
+
+layout(std430, binding = 0) readonly buffer MaterialBuffer {
+    vec4 diffuseColor;
+    vec4 specularColor;
+    vec4 parameters;
+} material;
 
 vec3 getSurfaceNormal() {
     vec3 geometricNormal = normalize(Normal);
@@ -45,14 +47,14 @@ vec3 getSurfaceNormal() {
 }
 
 void main() {
-    vec3 baseColor = materialDiffuseColor;
+    vec3 baseColor = material.diffuseColor.rgb;
     if (hasDiffuseMap) {
         baseColor *= texture(diffuseMap, TexCoord).rgb;
     }
 
     float roughness = hasRoughnessMap
         ? texture(roughnessMap, TexCoord).r
-        : clamp(1.0 - materialShininess / 128.0, 0.05, 1.0);
+        : clamp(1.0 - material.parameters.y / 128.0, 0.05, 1.0);
     float specularPower = mix(128.0, 4.0, roughness);
 
     vec3 normal = getSurfaceNormal();
@@ -63,8 +65,8 @@ void main() {
     float diffuseFactor = max(dot(normal, lightDirection), 0.0);
     float specularFactor = pow(max(dot(normal, halfwayDirection), 0.0), specularPower);
 
-    vec3 ambient = ambientStrength * lightColor * baseColor;
+    vec3 ambient = material.parameters.x * lightColor * baseColor;
     vec3 diffuse = diffuseFactor * lightColor * baseColor;
-    vec3 specular = specularFactor * lightColor * materialSpecularColor;
+    vec3 specular = specularFactor * lightColor * material.specularColor.rgb;
     FragColor = vec4(ambient + diffuse + specular, 1.0);
 }

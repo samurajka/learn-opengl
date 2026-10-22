@@ -70,6 +70,7 @@ int main(){
     GLFWwindow* window = glfwCreateWindow(800, 600, "LearnOpenGL", NULL, NULL);
     if(window == NULL){
         std::cout << "Failed to create GLFW window" << std::endl;
+        Material::ReleaseSSBO();
         glfwTerminate();
         return -1;
     }
