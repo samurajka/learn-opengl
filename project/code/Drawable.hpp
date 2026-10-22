@@ -19,7 +19,7 @@ class Drawable{
     std::shared_ptr<ShaderProgram> shaderProgram;
     std::optional<TransformationList> transformations = std::nullopt;
     std::optional<Transformation> singleTransformation = std::nullopt;
-    std::optional<Texture> texture = std::nullopt;
+    std::shared_ptr<Texture> texture;
 
     Drawable(){};
 
@@ -40,7 +40,8 @@ class Drawable{
             this->transformations->ApplyAllTransformations(model);
         }
 
-        if(this->texture.has_value()){
+        this->shaderProgram->setBool("hasTexture", this->texture != nullptr);
+        if(this->texture){
             this->texture->ApplyTexture(*this->shaderProgram);
             this->texture->Bind();
         }

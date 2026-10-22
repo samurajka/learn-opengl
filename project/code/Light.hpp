@@ -15,7 +15,7 @@ namespace lights{
     class PointLight : public Subject<PointLight>{
         public:
         glm::vec3 position{0.0f};
-        LightStrength LightStrength;
+        LightStrength lightStrength;
         
         void SetPosition(glm::vec3 position){
             this->position = position;

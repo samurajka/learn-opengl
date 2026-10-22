@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <stdlib.h>
 #include <memory>
+#include <vector>
 #include "../../glad/include/glad/glad.h"
 #include "ErrorManager.hpp"
 
@@ -36,6 +37,14 @@ class Model{
         BindBuffer(vertices);
     }
 
+    Model(ModelType type, const std::vector<float> &vertices){
+        glGenVertexArrays(1, &this->VAO);
+        glGenBuffers(1, &this->VBO);
+        this->Type = type;
+
+        BindBuffer(vertices);
+    }
+
     ~Model(){
         glDeleteBuffers(1, &this->VBO);
         glDeleteVertexArrays(1, &this->VAO);
@@ -43,12 +52,16 @@ class Model{
 
 
     void BindBuffer(const std::initializer_list<float> &vertices){
-        this->vertexCount = vertices.size();
+        BindBuffer(std::vector<float>(vertices));
+    }
+
+    void BindBuffer(const std::vector<float> &vertices){
+        this->vertexCount = static_cast<int>(vertices.size());
 
         glBindVertexArray(this->VAO);
 
         glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
-        glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.begin(), GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STATIC_DRAW);
         
         switch (this->Type)
         {
@@ -74,7 +87,7 @@ class Model{
             break;
 
         case VERTICES_NORMAL:
-            this->vertexCount = vertices.size() / 6;
+            this->vertexCount = static_cast<int>(vertices.size() / 6);
             glEnableVertexAttribArray(0);
             glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (GLvoid*)0);
             glEnableVertexAttribArray(1);

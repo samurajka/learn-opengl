@@ -91,20 +91,31 @@ class ShaderProgram : public Observer<Camera>{
         glUseProgram(0);
     }
 
-    void setBool(const std::string &name, bool value) const{
+    void setBool(const std::string &name, bool value){
+        this->use();
         glUniform1i(glGetUniformLocation(ID, name.c_str()), (int)value);
+        this->unuse();
     }
     void setInt(const std::string &name, int value) const{
         glUniform1i(glGetUniformLocation(this->ID, name.c_str()), value);
     }
-    void setFloat(const std::string &name, float value) const{
+    void setFloat(const std::string &name, float value){
+        this->use();
         glUniform1f(glGetUniformLocation(ID, name.c_str()), value);
+        this->unuse();
     }
 
     void setUniform(std::string name, const glm::mat4 &mat){
         this->use();
         glm::uint transformLoc = glGetUniformLocation(this->ID, name.c_str());
         glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(mat));
+        this->unuse();
+    }
+
+    void setVec3(std::string name, const glm::vec3 &vec){
+        this->use();
+        glm::uint vecLoc = glGetUniformLocation(this->ID, name.c_str());
+        glUniform3fv(vecLoc, 1, &vec[0]);
         this->unuse();
     }
 
@@ -116,6 +127,7 @@ class ShaderProgram : public Observer<Camera>{
         this->use();
         this->setUniform("view", camera.GetViewMatrix());
         this->setUniform("projection", camera.GetProjectionMatrix());
+        this->setVec3("viewPos", camera.Position);
         this->unuse();
     }
 };

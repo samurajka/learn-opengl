@@ -11,6 +11,7 @@
 #include "../models/bushes.h"
 #include "../models/tree.h"
 #include "ErrorManager.hpp"
+#include "ModelLoader.hpp"
 #include <cstdlib>
 #include "../../glad/include/glad/glad.h"
 #include "Light.hpp"
@@ -155,21 +156,29 @@ namespace TestScenes{
     }
 
     std::shared_ptr<Scene> MonkeyScene(std::shared_ptr<Camera> camera){
-        auto basicShader = std::make_shared<ShaderProgram>("shaders/basic_vertex_shader.glsl", "shaders/basic_fragment_shader.glsl");
+        auto phongShader = std::make_shared<ShaderProgram>("shaders/phong_vertex_shader.glsl", "shaders/phong_fragment.glsl");
 
         auto monkeyModel = std::make_shared<Model>(VERTICES_NORMAL, monkey::suziFlat);
 
-        auto monkeyDrawable = std::make_shared<Drawable>(basicShader, monkeyModel);
+        auto monkeyDrawable = std::make_shared<Drawable>(phongShader, monkeyModel);
 
         auto monkeyScene = std::make_shared<Scene>();
 
-        camera->AddObserver(basicShader);
-        basicShader->update(*camera);
-
-        monkeyScene->AddDrawable(monkeyDrawable);
+        camera->AddObserver(phongShader);
+        phongShader->update(*camera);
 
         std::shared_ptr<lights::PointLight> light = std::make_shared<lights::PointLight>();
-        light->SetPosition(glm::vec3(0.5f, 0.0f, 0.5f));
+        light->SetPosition(glm::vec3(0.8f, 0.0f, 1.5f));
+        phongShader->setVec3("lightPos", light->position);
+        phongShader->setVec3("lightColor", glm::vec3(1.0f));
+        phongShader->setVec3("objectColor", glm::vec3(0.75f, 0.35f, 0.16f));
+        phongShader->setFloat("ambientStrength", 0.2f);
+        phongShader->setFloat("diffuseStrength", 0.8f);
+        phongShader->setFloat("specularStrength", 0.5f);
+        phongShader->setFloat("shininess", 32.0f);
+        phongShader->setBool("useBlinnPhong", true);
+
+        monkeyScene->AddDrawable(monkeyDrawable);
         monkeyScene->AddPLight(light);
 
         return monkeyScene;
@@ -208,6 +217,36 @@ namespace TestScenes{
         }
 
         return forestScene;
+    }
+
+    std::shared_ptr<Scene> HouseScene(std::shared_ptr<Camera> camera){
+        auto phongShader = std::make_shared<ShaderProgram>("shaders/phong_vertex_shader.glsl", "shaders/phong_fragment.glsl");
+        auto houseModel = ModelLoader::LoadObj("models/old_house.obj");
+        auto houseDrawable = std::make_shared<Drawable>(phongShader, houseModel);
+        auto houseScene = std::make_shared<Scene>();
+
+        TransformationList houseTransformations;
+        houseTransformations.PushBackTransformation(
+            Transformation(TRANSLATE, {-0.36f, -0.44f, 0.64f}));
+        houseTransformations.PushBackTransformation(
+            Transformation(SCALE, {0.15f, 0.15f, 0.15f}));
+        houseTransformations.PushBackTransformation(
+            Transformation(ROTATE, {1.0f, 0.0f, 0.0f}, glm::radians(-90.0f)));
+        houseDrawable->transformations = houseTransformations;
+
+        camera->AddObserver(phongShader);
+        phongShader->update(*camera);
+        phongShader->setVec3("lightPos", glm::vec3(2.0f, 3.0f, 3.0f));
+        phongShader->setVec3("lightColor", glm::vec3(1.0f));
+        phongShader->setVec3("objectColor", glm::vec3(0.75f, 0.55f, 0.35f));
+        phongShader->setFloat("ambientStrength", 0.3f);
+        phongShader->setFloat("diffuseStrength", 0.8f);
+        phongShader->setFloat("specularStrength", 0.2f);
+        phongShader->setFloat("shininess", 16.0f);
+        phongShader->setBool("useBlinnPhong", true);
+
+        houseScene->AddDrawable(houseDrawable);
+        return houseScene;
     }
 }
 

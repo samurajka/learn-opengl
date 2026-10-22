@@ -17,6 +17,11 @@
 #include <cstdlib>
 #include <ctime>
 
+//include textures
+#define STB_IMAGE_IMPLEMENTATION
+#include "textures/stb_image.h"
+#undef STB_IMAGE_IMPLEMENTATION
+
 //include models
 #include "models/triangle.hpp"
 #include "models/rectangle.hpp"
@@ -31,11 +36,6 @@
 #include "code/Application.hpp"
 #include "code/Scenes.hpp"
 #include "code/Observer.hpp"
-
-//include textures
-#define STB_IMAGE_IMPLEMENTATION
-#include "textures/stb_image.h"
-
 
 int viewportX = 0;
 int viewportY = 0;
@@ -96,6 +96,7 @@ int main(){
     auto loginScene = TestScenes::LoginScene(camera);
     auto monkeyScene = TestScenes::MonkeyScene(camera);
     auto forestScene = TestScenes::ForestScene(camera);
+    auto houseScene = TestScenes::HouseScene(camera);
 
     auto sceneManager = std::make_shared<SceneManager>();
 
@@ -103,7 +104,9 @@ int main(){
     sceneManager->AddScene(loginScene);
     sceneManager->AddScene(monkeyScene);
     sceneManager->AddScene(forestScene);
+    sceneManager->AddScene(houseScene);
 
+    sceneManager->ActiveSceneUp();
     sceneManager->ActiveSceneUp();
     sceneManager->ActiveSceneUp();
     sceneManager->ActiveSceneUp();

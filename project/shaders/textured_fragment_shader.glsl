@@ -7,7 +7,8 @@ out vec4 FragColor;
 in vec2 TexCoord;
 
 uniform sampler2D someTexture;
+uniform bool hasTexture;
 
 void main(){
-    FragColor = texture(someTexture, TexCoord);
+    FragColor = hasTexture ? texture(someTexture, TexCoord) : vec4(1.0);
 }
