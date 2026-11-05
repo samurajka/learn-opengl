@@ -47,3 +47,12 @@ Keep the OBJ, MTL, and image files together in their referenced relative paths.
 The loader creates one drawable per OBJ mesh/material and loads diffuse,
 normal, and shininess/roughness maps into a `Material`. `Material::Apply`
 binds those maps and material values for the lighting shader.
+
+## Shadow mapping
+
+The house scene renders a depth map from the light before the regular scene
+pass, then uses percentage-closer filtering in the lighting shader to shade
+occluded fragments. Its ground plane receives the house's cast shadow. The
+shadow depth shaders and light-space projection are in `project/shaders` and
+`project/code/ShadowMap.hpp`; the depth texture is released before the OpenGL
+context is destroyed.
