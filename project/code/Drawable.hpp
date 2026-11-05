@@ -20,8 +20,8 @@ class Drawable{
     std::shared_ptr<ShaderProgram> shaderProgram;
     std::optional<TransformationList> transformations = std::nullopt;
     std::optional<Transformation> singleTransformation = std::nullopt;
-    std::shared_ptr<Texture> texture;
-    std::shared_ptr<Material> material;
+    std::shared_ptr<Texture> texture = nullptr;
+    std::shared_ptr<Material> material = nullptr;
 
     Drawable(){};
 
@@ -30,10 +30,9 @@ class Drawable{
         this->model = model;
     }
 
-    void Render(){
+    glm::mat4 GetModelMatrix() {
         glm::mat4 model(1.0f);
 
-        // transformation procesing here (fuck composite)
         if(this->singleTransformation.has_value()){
             singleTransformation->ApplyTransformation(model);
         }
@@ -42,8 +41,19 @@ class Drawable{
             this->transformations->ApplyAllTransformations(model);
         }
 
-        this->shaderProgram->setUniform("model", model);
+        return model;
+    }
 
+    void RenderDepth(ShaderProgram &depthShader, const glm::mat4 &lightSpaceMatrix) {
+        depthShader.setUniform("model", GetModelMatrix());
+        depthShader.setUniform("lightSpaceMatrix", lightSpaceMatrix);
+        depthShader.Render();
+        this->model->Render();
+        depthShader.unuse();
+    }
+
+    void Render(){
+        this->shaderProgram->setUniform("model", GetModelMatrix());
         this->shaderProgram->Render();
         if(this->material){
             this->material->Apply(*this->shaderProgram);

@@ -141,6 +141,7 @@ int main(){
         glfwPollEvents();
     }
 
+    sceneManager->ReleaseGraphicsResources();
     glfwTerminate();
     return 0;
 }

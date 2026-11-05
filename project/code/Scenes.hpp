@@ -15,6 +15,7 @@
 #include <cstdlib>
 #include "../../glad/include/glad/glad.h"
 #include "Light.hpp"
+#include "ShadowMap.hpp"
 
 // IMPORTANT this requires camera
 class Scene{
@@ -22,6 +23,7 @@ class Scene{
     std::vector<std::shared_ptr<Drawable>> drawables;
     std::shared_ptr<Camera> camera;
     std::vector<std::shared_ptr<lights::PointLight>> pLights;
+    std::unique_ptr<ShadowMap> shadowMap;
     
 
     void AddDrawable(std::shared_ptr<Drawable> drawable){
@@ -32,14 +34,42 @@ class Scene{
         pLights.push_back(pLight);
     }
 
+    void EnableShadowMapping(const glm::vec3 &lightPosition,
+                             const glm::vec3 &target) {
+        shadowMap = std::make_unique<ShadowMap>(lightPosition, target);
+    }
+
     void UpdateViewAndProjection(){
         
     }
 
     void Render(){
+        if (shadowMap) {
+            shadowMap->BeginRender();
+            for (const auto &drawable : drawables) {
+                drawable->RenderDepth(shadowMap->GetDepthShader(),
+                                     shadowMap->GetLightSpaceMatrix());
+            }
+            shadowMap->EndRender();
+            shadowMap->BindForReading(5);
+
+            for (const auto &drawable : drawables) {
+                drawable->shaderProgram->setUniform(
+                    "lightSpaceMatrix", shadowMap->GetLightSpaceMatrix());
+                drawable->shaderProgram->use();
+                drawable->shaderProgram->setInt("shadowMap", 5);
+                drawable->shaderProgram->unuse();
+                drawable->shaderProgram->setBool("shadowsEnabled", true);
+            }
+        }
+
         for(auto drawable : drawables){
             drawable->Render();
         }
+    }
+
+    void ReleaseGraphicsResources() {
+        shadowMap.reset();
     }
 };
 
@@ -80,6 +110,12 @@ class SceneManager{
         std::shared_ptr sceneToRender = this->GetActiveScene();
 
         sceneToRender->Render();
+    }
+
+    void ReleaseGraphicsResources() {
+        for (const auto &scene : scenes) {
+            scene->ReleaseGraphicsResources();
+        }
     }
 
     void ProcessInput(GLFWwindow* window){
@@ -236,13 +272,33 @@ namespace TestScenes{
 
         camera->AddObserver(texturedShader);
         texturedShader->update(*camera);
-        texturedShader->setVec3("lightPos", glm::vec3(2.0f, 3.0f, 3.0f));
+        const glm::vec3 lightPosition(2.0f, 3.0f, 3.0f);
+        texturedShader->setVec3("lightPos", lightPosition);
         texturedShader->setVec3("lightColor", glm::vec3(1.0f));
         for (const auto &drawable : ModelLoader::LoadObjDrawables(
                  "models/old_house.obj", texturedShader)) {
             drawable->transformations = houseTransformations;
             houseScene->AddDrawable(drawable);
         }
+
+        const std::vector<float> groundVertices{
+            -5.0f, 0.0f, -5.0f, 0.0f, 1.0f, 0.0f,
+             5.0f, 0.0f, -5.0f, 0.0f, 1.0f, 0.0f,
+             5.0f, 0.0f,  5.0f, 0.0f, 1.0f, 0.0f,
+            -5.0f, 0.0f, -5.0f, 0.0f, 1.0f, 0.0f,
+             5.0f, 0.0f,  5.0f, 0.0f, 1.0f, 0.0f,
+            -5.0f, 0.0f,  5.0f, 0.0f, 1.0f, 0.0f
+        };
+        auto groundModel = std::make_shared<Model>(VERTICES_NORMAL, groundVertices);
+        auto ground = std::make_shared<Drawable>(texturedShader, groundModel);
+        ground->singleTransformation =
+            Transformation(TRANSLATE, glm::vec3(0.0f, -0.48f, 0.0f));
+        ground->material = std::make_shared<Material>();
+        ground->material->diffuseColor = glm::vec3(0.35f);
+        ground->material->specularColor = glm::vec3(0.05f);
+        ground->material->ambientStrength = 0.15f;
+        houseScene->AddDrawable(ground);
+        houseScene->EnableShadowMapping(lightPosition, glm::vec3(0.0f, -0.1f, 0.0f));
 
         return houseScene;
     }

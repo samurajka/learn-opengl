@@ -62,7 +62,7 @@ class Model{
         glBindVertexArray(this->VAO);
 
         glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
-        glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STATIC_DRAW); // try to change .data() to .begin() and see if this works
         
         switch (this->Type)
         {
